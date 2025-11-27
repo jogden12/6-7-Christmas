@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Gift Preferences</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #1a3d0a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d5016 0%, #1a3d0a 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .question-container {
+            min-height: 400px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtext {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item:hover {
+            border-color: #2d5016;
+            background: #f0f8f0;
+        }
+
+        .option-item.selected {
+            border-color: #2d5016;
+            background: #2d5016;
+            color: white;
+        }
+
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #1a3d0a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            padding: 14px 25px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .completion {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .completion h2 {
+            font-size: 32px;
+            color: #2d5016;
+            margin-bottom: 20px;
+        }
+
+        .completion p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .question-counter {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2d5016;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .name-screen {
+            text-align: center;
+        }
+
+        .name-screen h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎄 Christmas Gift Preferences 🎁</h1>
+            <p>Help me find the perfect gift for you this year!</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="nameScreen" class="name-screen">
+            <h2>Let's get started!</h2>
+            <input type="text" id="userName" placeholder="What's your name?" autofocus>
+            <div class="buttons">
+                <button class="btn-primary" onclick="startQuestionnaire()">Begin</button>
+            </div>
+        </div>
+
+        <div id="questionScreen" style="display: none;">
+            <div class="question-counter" id="questionCounter"></div>
+            <div class="question-container">
+                <div class="question" id="questionText"></div>
+                <div class="subtext" id="subtext"></div>
+                <div id="inputContainer"></div>
+            </div>
+            <div class="buttons">
+                <button class="btn-secondary" onclick="previousQuestion()" id="backBtn">Back</button>
+                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">Next</button>
+            </div>
+        </div>
+
+        <div id="savingScreen" style="display: none;">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Saving your preferences...</p>
+            </div>
+        </div>
+
+        <div id="completionScreen" style="display: none;">
+            <div class="completion">
+                <h2>🎉 All Done!</h2>
+                <p>Thanks! Your gift preferences have been saved.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 'favorite_brands',
+                text: 'Select your favorite brands or stores',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Lululemon', 'Nike', 'Adidas', 'Patagonia', 'North Face',
+                    'Anthropologie', 'Free People', 'Urban Outfitters', 'Madewell',
+                    'J.Crew', 'Banana Republic', 'Gap', 'Old Navy',
+                    'Target', 'Amazon', 'Apple', 'Sony', 'Samsung',
+                    'Barnes & Noble', 'Local boutiques', 'REI', 'Dick\'s Sporting Goods',
+                    'Sephora', 'Ulta', 'Lush', 'Bath & Body Works',
+                    'Williams Sonoma', 'Sur La Table', 'HomeGoods', 'TJ Maxx',
+                    'Other (will specify later)'
+                ]
+            },
+            {
+                id: 'hobbies',
+                text: 'Select your hobbies and interests',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Reading', 'Writing', 'Drawing/Painting', 'Photography',
+                    'Gaming (video games)', 'Board games', 'Puzzles',
+                    'Cooking', 'Baking', 'Coffee/Tea', 'Wine tasting',
+                    'Yoga', 'Running', 'Cycling', 'Hiking', 'Gym/Fitness',
+                    'Gardening', 'Plants/Succulents', 'DIY projects', 'Crafting',
+                    'Music (listening)', 'Music (playing instrument)', 'Singing',
+                    'Movies/TV shows', 'Podcasts', 'Audiobooks',
+                    'Fashion/Style', 'Makeup/Beauty', 'Skincare', 'Nail art',
+                    'Travel', 'Languages', 'Collecting things',
+                    'Other (will specify later)'
+                ]
+            },
+            {
+                id: 'sports_watch',
+                text: 'Which sports do you enjoy watching?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Football (NFL)', 'Football (College)', 'Basketball (NBA)', 'Basketball (College)',
+                    'Baseball (MLB)', 'Hockey (NHL)', 'Soccer/Football',
+                    'Tennis', 'Golf', 'F1/Racing', 'MMA/Boxing',
+                    'Olympics', 'Gymnastics', 'Swimming', 'Track & Field',
+                    'Esports', 'None - not into sports', 'Other'
+                ]
+            },
+            {
+                id: 'entertainment',
+                text: 'What type of entertainment do you enjoy?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Action movies', 'Comedy movies', 'Drama movies', 'Horror/Thriller',
+                    'Sci-Fi/Fantasy', 'Romance', 'Documentaries', 'Animated films',
+                    'Reality TV', 'Drama series', 'Comedy series', 'Anime',
+                    'True crime', 'History/Science shows', 'Cooking shows',
+                    'YouTube', 'TikTok', 'Instagram', 'Twitch',
+                    'Concerts/Live music', 'Theater/Broadway', 'Comedy shows',
+                    'Podcasts', 'Audiobooks'
+                ]
+            },
+            {
+                id: 'music_genres',
+                text: 'What music genres do you like?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Pop', 'Rock', 'Alternative', 'Indie', 'Hip-Hop/Rap',
+                    'R&B/Soul', 'Country', 'EDM/Electronic', 'Dance',
+                    'Jazz', 'Classical', 'Blues', 'Reggae', 'Latin',
+                    'K-Pop', 'Metal', 'Punk', 'Folk', 'Gospel',
+                    'Soundtracks', 'Lo-fi/Chill', 'Everything', 'Other'
+                ]
+            },
+            {
+                id: 'style_aesthetic',
+                text: 'What describes your style or aesthetic?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Casual/Comfortable', 'Athletic/Sporty', 'Classic/Preppy',
+                    'Trendy/Fashion-forward', 'Minimalist', 'Boho/Free-spirited',
+                    'Edgy/Alternative', 'Vintage/Retro', 'Streetwear',
+                    'Elegant/Sophisticated', 'Cozy/Hygge', 'Colorful/Bold',
+                    'Neutral/Monochrome', 'Eclectic/Mixed', 'Cottagecore',
+                    'Dark Academia', 'Y2K', 'Punk/Grunge'
+                ]
+            },
+            {
+                id: 'colors',
+                text: 'What are your favorite colors?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Black', 'White', 'Gray', 'Navy', 'Blue (light/bright)',
+                    'Green (sage/olive)', 'Green (bright/emerald)', 'Yellow',
+                    'Orange', 'Red', 'Pink (light)', 'Pink (hot/bright)',
+                    'Purple', 'Brown/Tan/Beige', 'Gold', 'Silver', 'Rose Gold',
+                    'Pastels', 'Jewel tones', 'Earth tones', 'Neon/Bright colors'
+                ]
+            },
+            {
+                id: 'tech_gadgets',
+                text: 'What tech or gadgets interest you?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Smartphone accessories', 'Headphones/Earbuds', 'Smart watch/Fitness tracker',
+                    'Gaming console/accessories', 'Computer/laptop accessories',
+                    'Camera/Photography gear', 'Smart home devices', 'LED lights',
+                    'Portable speakers', 'Charging accessories', 'Phone cases',
+                    'iPad/Tablet accessories', 'VR headset', 'Drones',
+                    'Not really into tech', 'Other'
+                ]
+            },
+            {
+                id: 'home_interests',
+                text: 'What home/room items interest you?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Candles', 'Room decor', 'Wall art/Posters', 'Fairy lights/String lights',
+                    'Throw pillows', 'Blankets/Throws', 'Organizers/Storage',
+                    'Desk accessories', 'Bedroom accessories', 'Bathroom items',
+                    'Kitchen gadgets', 'Plants/Plant accessories', 'Rugs',
+                    'Picture frames', 'Mirrors', 'Lamps/Lighting', 'Bean bags/Chairs',
+                    'Bedding', 'Curtains', 'Shelving/Display'
+                ]
+            },
+            {
+                id: 'self_care',
+                text: 'What self-care or wellness items do you like?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Skincare products', 'Makeup', 'Hair care products',
+                    'Bath bombs/Bath products', 'Lotions/Body care',
+                    'Perfume/Cologne', 'Nail polish/Nail care', 'Face masks',
+                    'Massage tools', 'Essential oils/Diffuser', 'Sleep masks',
+                    'Journals/Planners', 'Meditation/Mindfulness tools',
+                    'Fitness equipment', 'Yoga accessories', 'Water bottles',
+                    'Tea/Coffee accessories', 'Vitamins/Supplements',
+                    'Not really my thing'
+                ]
+            },
+            {
+                id: 'books_reading',
+                text: 'If you like reading, what genres?',
+                subtext: 'Check all that apply (or skip if you don\'t read much)',
+                type: 'multiple',
+                options: [
+                    'Fantasy', 'Sci-Fi', 'Mystery/Thriller', 'Romance',
+                    'Historical Fiction', 'Contemporary Fiction', 'Classics',
+                    'Young Adult', 'Graphic Novels/Comics/Manga',
+                    'Self-help/Personal Development', 'Biographies/Memoirs',
+                    'True Crime', 'History', 'Science', 'Philosophy',
+                    'Poetry', 'Cookbooks', 'Art/Photography books',
+                    'Don\'t read much', 'Other'
+                ]
+            },
+            {
+                id: 'experiences',
+                text: 'What experiences would you enjoy?',
+                subtext: 'Check all that apply',
+                type: 'multiple',
+                options: [
+                    'Concert/Show tickets', 'Sporting event tickets', 'Movie theater',
+                    'Escape room', 'Cooking class', 'Art class', 'Dance class',
+                    'Music lessons', 'Spa day/Massage', 'Restaurant gift card',
+                    'Coffee shop gift card', 'Museum/Art gallery', 'Amusement park',
+                    'Road trip/Day trip', 'Outdoor adventure', 'Shopping spree',
+                    'Game night/Activity', 'Prefer physical gifts over experiences'
+                ]
+            },
+            {
+                id: 'price_range',
+                text: 'What price range feels appropriate for your main gift?',
+                subtext: 'This helps me plan - select one',
+                type: 'single',
+                options: [
+                    'Under $25',
+                    '$25-50',
+                    '$50-100',
+                    '$100-200',
+                    'Over $200',
+                    'No preference/Whatever works'
+                ]
+            },
+            {
+                id: 'wish_list',
+                text: 'Is there anything specific you\'ve been wanting?',
+                subtext: 'Be as specific or general as you like',
+                type: 'text',
+                placeholder: 'E.g., new headphones, cozy sweater, gift card to X, specific book title, etc.'
+            },
+            {
+                id: 'avoid',
+                text: 'Anything you DON\'T want or already have too much of?',
+                subtext: 'This is super helpful!',
+                type: 'text',
+                placeholder: 'E.g., no more candles, already have too many water bottles, don\'t like graphic tees, etc.'
+            },
+            {
+                id: 'other_notes',
+                text: 'Any other preferences or ideas?',
+                subtext: 'Optional - anything else I should know',
+                type: 'text',
+                placeholder: 'E.g., favorite characters, specific brands, dream items, clothing sizes, etc.'
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userName = "";
+        let responses = {};
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbwisHcD1HFUVeQXO8E-VGrhZOaGUKy7Y2Q7Wx42mtGPuXl24_vVUoMrsLIHm9G06ZTlzg/exec";
+
+        function startQuestionnaire() {
+            userName = document.getElementById('userName').value.trim();
+            if (!userName) {
+                alert('Please enter your name');
+                return;
+            }
+
+            document.getElementById('nameScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('questionText').textContent = question.text;
+            document.getElementById('subtext').textContent = question.subtext || '';
+            document.getElementById('questionCounter').textContent = 
+                `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.innerHTML = '';
+
+            if (question.type === 'multiple') {
+                const grid = document.createElement('div');
+                grid.className = 'options-grid';
+                
+                question.options.forEach(option => {
+                    const item = document.createElement('div');
+                    item.className = 'option-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = option;
+                    checkbox.value = option;
+                    
+                    if (responses[question.id] && responses[question.id].includes(option)) {
+                        checkbox.checked = true;
+                        item.classList.add('selected');
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    label.textContent = option;
+                    label.htmlFor = option;
+                    
+                    item.appendChild(checkbox);
+                    item.appendChild(label);
+                    
+                    item.onclick = (e) => {
+                        if (e.target !== checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                        item.classList.toggle('selected', checkbox.checked);
+                    };
+                    
+                    grid.appendChild(item);
+                });
+                
+                inputContainer.appendChild(grid);
+            } else if (question.type === 'single') {
+                const grid = document.createElement('div');
+                grid.className = 'options-grid';
+                
+                question.options.forEach(option => {
+                    const item = document.createElement('div');
+                    item.className = 'option-item';
+                    
+                    if (responses[question.id] === option) {
+                        item.classList.add('selected');
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    label.textContent = option;
+                    
+                    item.appendChild(label);
+                    
+                    item.onclick = () => {
+                        document.querySelectorAll('.option-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                        responses[question.id] = option;
+                    };
+                    
+                    grid.appendChild(item);
+                });
+                
+                inputContainer.appendChild(grid);
+            } else if (question.type === 'text') {
+                const textarea = document.createElement('textarea');
+                textarea.id = 'answerInput';
+                textarea.placeholder = question.placeholder || 'Your answer...';
+                textarea.value = responses[question.id] || '';
+                inputContainer.appendChild(textarea);
+            }
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            const backBtn = document.getElementById('backBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            backBtn.style.display = currentQuestionIndex === 0 ? 'none' : 'block';
+            nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function nextQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            if (currentQuestion.type === 'multiple') {
+                const selected = [];
+                document.querySelectorAll('.option-item.selected input[type="checkbox"]:checked').forEach(cb => {
+                    selected.push(cb.value);
+                });
+                responses[currentQuestion.id] = selected;
+            } else if (currentQuestion.type === 'text') {
+                responses[currentQuestion.id] = document.getElementById('answerInput').value.trim();
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishQuestionnaire();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                const currentQuestion = questions[currentQuestionIndex];
+                
+                if (currentQuestion.type === 'multiple') {
+                    const selected = [];
+                    document.querySelectorAll('.option-item.selected input[type="checkbox"]:checked').forEach(cb => {
+                        selected.push(cb.value);
+                    });
+                    responses[currentQuestion.id] = selected;
+                } else if (currentQuestion.type === 'text') {
+                    responses[currentQuestion.id] = document.getElementById('answerInput').value.trim();
+                }
+                
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        async function finishQuestionnaire() {
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('savingScreen').style.display = 'block';
+            
+            await saveToGoogleSheet();
+        }
+
+        async function saveToGoogleSheet() {
+            try {
+                const questionTexts = questions.map(q => q.text);
+                const answers = questions.map(q => {
+                    const answer = responses[q.id];
+                    if (Array.isArray(answer)) {
+                        return answer.join(', ');
+                    }
+                    return answer || '';
+                });
+
+                const payload = {
+                    name: userName,
+                    questions: questionTexts,
+                    answers: answers
+                };
+
+                const response = await fetch(webAppUrl, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                await response.json();
+                
+                document.getElementById('savingScreen').style.display = 'none';
+                document.getElementById('completionScreen').style.display = 'block';
+            } catch (error) {
+                console.error('Error saving:', error);
+                document.getElementById('savingScreen').style.display = 'none';
+                document.getElementById('completionScreen').style.display = 'block';
+            }
+        }
+
+        // Allow Enter key in name field
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('userName');
+            if (nameInput) {
+                nameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        startQuestionnaire();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
